@@ -194,25 +194,46 @@ class Database extends Config
     {
         parent::__construct();
 
-        $environmentVariables = [
-            'DB_HOST'     => 'hostname',
-            'DB_DATABASE' => 'database',
-            'DB_USERNAME' => 'username',
-            'DB_PASSWORD' => 'password',
-        ];
+        if (getenv('DB_DRIVER') === 'SQLite3') {
+            $this->default = [
+                'DSN'         => '',
+                'database'    => WRITEPATH . 'database.sqlite',
+                'DBDriver'    => 'SQLite3',
+                'DBPrefix'    => '',
+                'pConnect'    => false,
+                'DBDebug'     => true,
+                'swapPre'     => '',
+                'failover'    => [],
+                'foreignKeys' => true,
+                'busyTimeout' => 1000,
+                'synchronous' => null,
+                'dateFormat'  => [
+                    'date'     => 'Y-m-d',
+                    'datetime' => 'Y-m-d H:i:s',
+                    'time'     => 'H:i:s',
+                ],
+            ];
+        } else {
+            $environmentVariables = [
+                'DB_HOST'     => 'hostname',
+                'DB_DATABASE' => 'database',
+                'DB_USERNAME' => 'username',
+                'DB_PASSWORD' => 'password',
+            ];
 
-        foreach ($environmentVariables as $environmentVariable => $configKey) {
-            $value = getenv($environmentVariable);
+            foreach ($environmentVariables as $environmentVariable => $configKey) {
+                $value = getenv($environmentVariable);
 
-            if (is_string($value) && $value !== '') {
-                $this->default[$configKey] = $value;
+                if (is_string($value) && $value !== '') {
+                    $this->default[$configKey] = $value;
+                }
             }
-        }
 
-        $port = getenv('DB_PORT');
+            $port = getenv('DB_PORT');
 
-        if (is_string($port) && ctype_digit($port)) {
-            $this->default['port'] = (int) $port;
+            if (is_string($port) && ctype_digit($port)) {
+                $this->default['port'] = (int) $port;
+            }
         }
 
         if (ENVIRONMENT === 'production') {

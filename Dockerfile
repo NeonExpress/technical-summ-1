@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# CodeIgniter requires intl and mbstring; the app uses MySQLi.
+# CodeIgniter requires intl and mbstring. SQLite stores the deployed demo data.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libonig-dev unzip \
-    && docker-php-ext-install intl mbstring mysqli \
+    && apt-get install -y --no-install-recommends libicu-dev libonig-dev libsqlite3-dev unzip \
+    && docker-php-ext-install intl mbstring mysqli sqlite3 \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -27,7 +27,8 @@ RUN sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-availabl
     && sed -ri 's/Listen 80/Listen 10000/' /etc/apache2/ports.conf \
     && sed -ri 's/<VirtualHost \*:80>/<VirtualHost *:10000>/' /etc/apache2/sites-available/000-default.conf
 
-ENV CI_ENVIRONMENT=production
+ENV CI_ENVIRONMENT=production \
+    DB_DRIVER=SQLite3
 
 EXPOSE 10000
 
