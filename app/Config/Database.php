@@ -194,6 +194,31 @@ class Database extends Config
     {
         parent::__construct();
 
+        $environmentVariables = [
+            'DB_HOST'     => 'hostname',
+            'DB_DATABASE' => 'database',
+            'DB_USERNAME' => 'username',
+            'DB_PASSWORD' => 'password',
+        ];
+
+        foreach ($environmentVariables as $environmentVariable => $configKey) {
+            $value = getenv($environmentVariable);
+
+            if (is_string($value) && $value !== '') {
+                $this->default[$configKey] = $value;
+            }
+        }
+
+        $port = getenv('DB_PORT');
+
+        if (is_string($port) && ctype_digit($port)) {
+            $this->default['port'] = (int) $port;
+        }
+
+        if (ENVIRONMENT === 'production') {
+            $this->default['DBDebug'] = false;
+        }
+
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.

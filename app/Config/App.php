@@ -42,6 +42,18 @@ class App extends BaseConfig
      */
     public string $indexPage = 'index.php';
 
+    public function __construct()
+    {
+        parent::__construct();
+
+        $renderUrl = getenv('RENDER_EXTERNAL_URL');
+
+        if (is_string($renderUrl) && $renderUrl !== '') {
+            $this->baseURL = rtrim($renderUrl, '/') . '/';
+            $this->indexPage = '';
+        }
+    }
+
     /**
      * --------------------------------------------------------------------------
      * URI PROTOCOL
