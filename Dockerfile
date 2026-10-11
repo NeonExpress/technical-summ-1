@@ -1,9 +1,9 @@
 FROM php:8.2-apache
 
-# CodeIgniter requires intl and mbstring. SQLite stores the deployed demo data.
+# CodeIgniter requires intl and mbstring. The PHP image already includes SQLite.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libonig-dev libsqlite3-dev unzip \
-    && docker-php-ext-install intl mbstring mysqli sqlite3 \
+    && apt-get install -y --no-install-recommends libicu-dev libonig-dev unzip \
+    && docker-php-ext-install intl mbstring mysqli \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
